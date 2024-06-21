@@ -20,14 +20,15 @@ async function updateCache() {
             fetch(element).then(async res => {
                 content = await res.clone().text();
                 console.log([b.localeCompare(content), b, content])
-                if(b.localeCompare(content) != 0)
+                if(b.localeCompare(content) != 0){
                     await cache.put(element, res.clone());
+                    self.skipWaiting();
+                }
             })
         })
     })
     console.log(response);
     console.log(x);
-    debugger;
     }
 
   
