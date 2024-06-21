@@ -17,11 +17,11 @@ async function updateCache() {
     var x = await cache.match(response);
     caches.open(CACHE_NAME).then(function (cache) {
         cache.match(element, {}).then(m => m.text()).then(b=>{
-            fetch(element).then(res=>res.text()).then( async e => {
-                console.log([b.localeCompare(e), b, e])
-                if (res.ok) {
+            fetch(element).then(async res => {
+                content = await res.text();
+                console.log([b.localeCompare(content), b, content])
+                if(b.localeCompare(content) > 0)
                     await cache.put(element, res.clone());
-                }
             })
         })
     })
