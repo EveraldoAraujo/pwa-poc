@@ -16,6 +16,7 @@ async function updateCache(request) {
 
 // Função para buscar do cache e atualizar em segundo plano
 async function fetchAndUpdate(request) {
+    console.log(request);
   const cache = await caches.open(CACHE_NAME);
   const cachedResponse = await cache.match(request);
   const networkResponsePromise = fetch(request);
