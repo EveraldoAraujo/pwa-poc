@@ -31,6 +31,7 @@
   <button id="update-button">Atualizar App</button>
   <script>
     let deferredPrompt;
+    let updateInCache = false;
     const installButton = document.getElementById('install-button');
     const updateButton = document.getElementById('update-button');
 
@@ -60,6 +61,13 @@
       window.addEventListener('load', () => {
         console.log("load")
 
+        navigator.serviceWorker.addEventListener('message', (event) => {
+          if (event.data.action === 'newVersionAvailableInCache') {
+            updateInCache = true;
+            updateButton.style.display = 'block';
+          }
+        });
+
         navigator.serviceWorker.register('/service-worker.js').then((registration) => {
           console.log('ServiceWorker registrado com sucesso: ', registration.scope);
 
@@ -72,6 +80,8 @@
               }
             };
           };
+
+          
 
           // Configurar intervalo para verificar atualizações periodicamente
           setInterval(() => {
@@ -87,6 +97,9 @@
 
     updateButton.addEventListener('click', () => {
         console.log("click")
+        if(updateInCache){
+            window.location.reload();
+        }
 
       if (navigator.serviceWorker.controller) {
         navigator.serviceWorker.controller.postMessage({ action: 'skipWaiting' });

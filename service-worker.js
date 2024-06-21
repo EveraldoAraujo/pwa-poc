@@ -22,7 +22,9 @@ async function updateCache() {
                 console.log([b.localeCompare(content), b, content])
                 if(b.localeCompare(content) != 0){
                     await cache.put(element, res.clone());
-                    self.skipWaiting();
+                    self.clients.matchAll().then(clients => {
+                        clients.forEach(client => client.postMessage({ action: 'newVersionAvailableInCache' }));
+                      });
                 }
             })
         })
