@@ -12,7 +12,6 @@ async function updateCache() {
 
     for (let index = 0; index < urlsToCache.length; index++) {
         const element = urlsToCache[index];
-        
 
         const cache = await caches.open(CACHE_NAME);
     const response = await fetch(element);
@@ -93,7 +92,7 @@ self.addEventListener('activate', (event) => {
 
 self.addEventListener('fetch', (event) => {
     console.log("fetch")
-    
+
     if(updateInCache){
 
         self.clients.matchAll().then(clients => {
@@ -111,6 +110,13 @@ self.addEventListener('message', (event) => {
   }
 });
 
+self.addEventListener('message', (event) => {
+    console.log("message")
+  if (event.data.action === 'updatedByCache') {
+    updateInCache = false;
+    self.skipWaiting();
+  }
+});
 
 setInterval( async ()=>{
    await updateCache();

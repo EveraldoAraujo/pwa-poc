@@ -36,6 +36,7 @@
     <script>
         let deferredPrompt;
         let updateInCache;
+        let swregistration;
         const installButton = document.getElementById('install-button');
         const updateButton = document.getElementById('update-button');
 
@@ -73,8 +74,8 @@
                 });
 
                 navigator.serviceWorker.register('/service-worker.js').then((registration) => {
+                    swregistration = registration;
                     console.log('ServiceWorker registrado com sucesso: ', registration.scope);
-
                     // Verificar se há uma atualização disponível
                     registration.onupdatefound = () => {
                         const installingWorker = registration.installing;
@@ -102,6 +103,11 @@
         updateButton.addEventListener('click', () => {
             console.log("click")
             if (updateInCache) {
+// swregistration.dispatchEvent(new Event("updatedByCache"));
+ if (navigator.serviceWorker.controller) {
+                navigator.serviceWorker.controller.postMessage({ action: 'updatedByCache' });
+            }
+            // updateInCache = false;
                 window.location.reload();            
             }
 
