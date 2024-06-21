@@ -9,7 +9,7 @@ self.addEventListener('install', (event) => {
         return cache.addAll(urlsToCache);
       })
     );
-    self.skipWaiting(); // Força o novo SW a ser ativado imediatamente
+    self.skipWaiting(); // Força o novo SW a ser ativado imediatamentee
   });
   
   self.addEventListener('activate', (event) => {
