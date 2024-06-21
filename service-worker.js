@@ -97,6 +97,6 @@ self.addEventListener('message', (event) => {
 });
 
 
-setTimeout( async ()=>{
+setInterval( async ()=>{
    await updateCache();
 }, 30000)
