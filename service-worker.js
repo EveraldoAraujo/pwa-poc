@@ -14,7 +14,7 @@ async function updateCache() {
 
         const cache = await caches.open(CACHE_NAME);
     const response = await fetch(element);
-    var x = cache.match(response);
+    var x = await cache.match(response);
     console.log(response);
     console.log(x);
     debugger;
