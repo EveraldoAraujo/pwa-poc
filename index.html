@@ -101,16 +101,8 @@
 
         updateButton.addEventListener('click', () => {
             console.log("click")
-            if (updateInCache.length > 0) {
-
-                caches.open(CACHE_NAME).then(function (cache) {
-                    updateInCache.forEach( u, i => 
-                        cache.put(event.data.data.element, event.data.data.res)
-                        .then(v => { 
-                            if (updateInCache.length - 1 == i) window.location.reload(); 
-                    }));
-                });
-
+            if (updateInCache) {
+                window.location.reload();            
             }
 
             else if (navigator.serviceWorker.controller) {
