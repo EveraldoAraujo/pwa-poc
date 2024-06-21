@@ -1,116 +1,129 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Meu PWA</title>
-  <link rel="manifest" href="/manifest.json">
-  <link rel="icon" type="image/png" sizes="192x192" href="/images/icon-192x192.png">
-  <link rel="icon" type="image/png" sizes="512x512" href="/images/icon-512x512.png">
-  <style>
-    #install-button, #update-button {
-      display: none;
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      padding: 10px 20px;
-      background-color: #000;
-      color: #fff;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-    #update-button {
-      bottom: 60px;
-    }
-  </style>
-</head>
-<body>
-  <h1>Bem-vindo ao Meu PWA 23</h1>
-  <button id="install-button">Instalar</button>
-  <button id="update-button">Atualizar</button>
-  <script>
-    let deferredPrompt;
-    let updateInCache = false;
-    const installButton = document.getElementById('install-button');
-    const updateButton = document.getElementById('update-button');
-
-    window.addEventListener('beforeinstallprompt', (e) => {
-        console.log("beforeprompt")
-
-      e.preventDefault();
-      deferredPrompt = e;
-      installButton.style.display = 'block';
-    });
-
-    installButton.addEventListener('click', async () => {
-        console.log("click")
-
-      installButton.style.display = 'none';
-      deferredPrompt.prompt();
-      const { outcome } = await deferredPrompt.userChoice;
-      if (outcome === 'accepted') {
-        console.log('Usuário aceitou a instalação do PWA');
-      } else {
-        console.log('Usuário rejeitou a instalação do PWA');
-      }
-      deferredPrompt = null;
-    });
-
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        console.log("load")
-
-        navigator.serviceWorker.addEventListener('message', (event) => {
-          if (event.data.action === 'newVersionAvailableInCache') {
-            updateInCache = true;
-            updateButton.style.display = 'block';
-          }
-        });
-
-        navigator.serviceWorker.register('/service-worker.js').then((registration) => {
-          console.log('ServiceWorker registrado com sucesso: ', registration.scope);
-
-          // Verificar se há uma atualização disponível
-          registration.onupdatefound = () => {
-            const installingWorker = registration.installing;
-            installingWorker.onstatechange = () => {
-              if (installingWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                updateButton.style.display = 'block';
-              }
-            };
-          };
-
-          
-
-          // Configurar intervalo para verificar atualizações periodicamente
-          setInterval(() => {
-            console.log("interval")
-
-            registration.update();
-          }, 60 * 1 * 1000); // Verificar a cada hora
-        }).catch((err) => {
-          console.log('ServiceWorker registro falhou: ', err);
-        });
-      });
-    }
-
-    updateButton.addEventListener('click', () => {
-        console.log("click")
-        if(updateInCache){
-            window.location.reload();
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meu PWA</title>
+    <link rel="manifest" href="/manifest.json">
+    <link rel="icon" type="image/png" sizes="192x192" href="/images/icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="/images/icon-512x512.png">
+    <style>
+        #install-button,
+        #update-button {
+            display: none;
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 10px 20px;
+            background-color: #000;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
         }
 
-      if (navigator.serviceWorker.controller) {
-        navigator.serviceWorker.controller.postMessage({ action: 'skipWaiting' });
-      }
-    });
+        #update-button {
+            bottom: 60px;
+        }
+    </style>
+</head>
 
-    navigator.serviceWorker.addEventListener('controllerchange', () => {
-        console.log("control change")
+<body>
+    <h1>Bem-vindo ao Meu PWA 24</h1>
+    <button id="install-button">Instalar</button>
+    <button id="update-button">Atualizar</button>
+    <script>
+        let deferredPrompt;
+        let updateInCache = [];
+        const installButton = document.getElementById('install-button');
+        const updateButton = document.getElementById('update-button');
 
-      window.location.reload();
-    });
-  </script>
+        window.addEventListener('beforeinstallprompt', (e) => {
+            console.log("beforeprompt")
+
+            e.preventDefault();
+            deferredPrompt = e;
+            installButton.style.display = 'block';
+        });
+
+        installButton.addEventListener('click', async () => {
+            console.log("click")
+
+            installButton.style.display = 'none';
+            deferredPrompt.prompt();
+            const { outcome } = await deferredPrompt.userChoice;
+            if (outcome === 'accepted') {
+                console.log('Usuário aceitou a instalação do PWA');
+            } else {
+                console.log('Usuário rejeitou a instalação do PWA');
+            }
+            deferredPrompt = null;
+        });
+
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                console.log("load")
+
+                navigator.serviceWorker.addEventListener('message', (event) => {
+                    if (event.data.action === 'newVersionAvailableInCache') {
+                        updateInCache = [...updateInCache, event.data.data];
+                        updateButton.style.display = 'block';
+                    }
+                });
+
+                navigator.serviceWorker.register('/service-worker.js').then((registration) => {
+                    console.log('ServiceWorker registrado com sucesso: ', registration.scope);
+
+                    // Verificar se há uma atualização disponível
+                    registration.onupdatefound = () => {
+                        const installingWorker = registration.installing;
+                        installingWorker.onstatechange = () => {
+                            if (installingWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                                updateButton.style.display = 'block';
+                            }
+                        };
+                    };
+
+
+
+                    // Configurar intervalo para verificar atualizações periodicamente
+                    setInterval(() => {
+                        console.log("interval")
+
+                        registration.update();
+                    }, 60 * 1 * 1000); // Verificar a cada hora
+                }).catch((err) => {
+                    console.log('ServiceWorker registro falhou: ', err);
+                });
+            });
+        }
+
+        updateButton.addEventListener('click', () => {
+            console.log("click")
+            if (updateInCache.length > 0) {
+
+                caches.open(CACHE_NAME).then(function (cache) {
+                    updateInCache.forEach( u, i => 
+                        cache.put(event.data.data.element, event.data.data.res)
+                        .then(v => { 
+                            if (updateInCache.length - 1 == i) window.location.reload(); 
+                    }));
+                });
+
+            }
+
+            else if (navigator.serviceWorker.controller) {
+                navigator.serviceWorker.controller.postMessage({ action: 'skipWaiting' });
+            }
+        });
+
+        navigator.serviceWorker.addEventListener('controllerchange', () => {
+            console.log("control change")
+
+            window.location.reload();
+        });
+    </script>
 </body>
+
 </html>

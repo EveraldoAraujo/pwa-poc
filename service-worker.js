@@ -21,9 +21,8 @@ async function updateCache() {
                 content = await res.clone().text();
                 console.log([b.localeCompare(content), b, content])
                 if(b.localeCompare(content) != 0){
-                    await cache.put(element, res.clone());
                     self.clients.matchAll().then(clients => {
-                        clients.forEach(client => client.postMessage({ action: 'newVersionAvailableInCache' }));
+                        clients.forEach(client => client.postMessage({ action: 'newVersionAvailableInCache', data : {element, res: res.clone()} }));
                       });
                 }
             })
