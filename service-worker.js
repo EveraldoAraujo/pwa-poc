@@ -13,13 +13,13 @@ async function updateCache() {
         
 
         const cache = await caches.open(CACHE_NAME);
-  const response = await fetch(request);
-  var x = cache.match(response);
-  console.log(response);
-  console.log(x);
-  debugger;
-  if (response.ok) {
-    await cache.put(request, response.clone());
+    const response = await fetch(element);
+    var x = cache.match(response);
+    console.log(response);
+    console.log(x);
+    debugger;
+    if (response.ok) {
+    await cache.put(element, response.clone());
   }
 
     }
