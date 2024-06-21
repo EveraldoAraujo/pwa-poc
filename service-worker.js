@@ -18,7 +18,7 @@ async function updateCache() {
     caches.open(CACHE_NAME).then(function (cache) {
         cache.match(element, {}).then(m => m.text()).then(b=>{
             fetch(element).then(async res => {
-                content = await res.text();
+                content = await res.clone().text();
                 console.log([b.localeCompare(content), b, content])
                 if(b.localeCompare(content) != 0)
                     await cache.put(element, res.clone());
