@@ -26,7 +26,7 @@
   </style>
 </head>
 <body>
-  <h1>Bem-vindo ao Meu PWA v5 3</h1>
+  <h1>Bem-vindo ao Meu PWA</h1>
   <button id="install-button">Instalar App</button>
   <button id="update-button">Atualizar App</button>
   <script>
@@ -57,16 +57,17 @@
         navigator.serviceWorker.register('/service-worker.js').then((registration) => {
           console.log('ServiceWorker registrado com sucesso: ', registration.scope);
 
-          // Verificar se há uma atualização disponível
           registration.onupdatefound = () => {
             const installingWorker = registration.installing;
             installingWorker.onstatechange = () => {
-              if (installingWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                updateButton.style.display = 'block';
+              if (installingWorker.state === 'installed') {
+                if (navigator.serviceWorker.controller) {
+                  updateButton.style.display = 'block';
+                }
               }
             };
           };
-        }).catch((err) => {
+        }, (err) => {
           console.log('ServiceWorker registro falhou: ', err);
         });
       });
@@ -76,6 +77,7 @@
       if (navigator.serviceWorker.controller) {
         navigator.serviceWorker.controller.postMessage({ action: 'skipWaiting' });
       }
+      window.location.reload();
     });
 
     navigator.serviceWorker.addEventListener('controllerchange', () => {
