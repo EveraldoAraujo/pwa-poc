@@ -5,16 +5,31 @@ const urlsToCache = [
 ];
 
 // Função para atualizar o cache
-async function updateCache(request) {
+async function updateCache() {
     console.log("updateCache")
 
-  const cache = await caches.open(CACHE_NAME);
+    for (let index = 0; index < urlsToCache.length; index++) {
+        const element = urlsToCache[index];
+        
+
+        const cache = await caches.open(CACHE_NAME);
   const response = await fetch(request);
+  var x = cache.match(response);
+  console.log(response);
+  console.log(x);
+  debugger;
   if (response.ok) {
     await cache.put(request, response.clone());
   }
-  return response;
+
+    }
+
+  
+  
 }
+
+
+
 
 // Função para buscar do cache e atualizar em segundo plano
 async function fetchAndUpdate(request) {
@@ -75,3 +90,8 @@ self.addEventListener('message', (event) => {
     self.skipWaiting();
   }
 });
+
+
+setTimeout( async ()=>{
+   await updateCache();
+}, 30000)
