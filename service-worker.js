@@ -4,6 +4,8 @@ const urlsToCache = [
   '/index.html'
 ];
 
+let updateInCache = false;
+
 // Função para atualizar o cache
 async function updateCache() {
     console.log("updateCache")
@@ -21,11 +23,15 @@ async function updateCache() {
                 content = await res.clone().text();
                 console.log([b.localeCompare(content), b, content])
                 if(b.localeCompare(content) != 0){
-                   let clients = await self.clients.matchAll()
-                    clients.forEach(client => client.postMessage({ action: 'newVersionAvailableInCache', data : {element, res: res.clone()} }))
+                    await cache.put(element, res.clone());
+                    updateInCache = true;
+
+                    self.clients.matchAll().then(clients => {
+                        clients.forEach(client => client.postMessage({ action: 'newVersionAvailableInCache' }));
+                      });
                 }
-                });
             })
+        })
     })
     console.log(response);
     console.log(x);
@@ -87,8 +93,15 @@ self.addEventListener('activate', (event) => {
 
 self.addEventListener('fetch', (event) => {
     console.log("fetch")
+    
+    if(updateInCache){
 
-  event.respondWith(fetchAndUpdate(event.request));
+        self.clients.matchAll().then(clients => {
+            clients.forEach(client => client.postMessage({ action: 'newVersionAvailableInCache' }));
+        });
+    }
+    
+    event.respondWith(fetchAndUpdate(event.request));
 });
 
 self.addEventListener('message', (event) => {

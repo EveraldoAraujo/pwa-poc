@@ -35,7 +35,7 @@
     <button id="update-button">Atualizar</button>
     <script>
         let deferredPrompt;
-        let updateInCache = [];
+        let updateInCache;
         const installButton = document.getElementById('install-button');
         const updateButton = document.getElementById('update-button');
 
@@ -67,8 +67,8 @@
 
                 navigator.serviceWorker.addEventListener('message', (event) => {
                     if (event.data.action === 'newVersionAvailableInCache') {
-                        updateInCache = [...updateInCache, event.data.data];
                         updateButton.style.display = 'block';
+                        updateInCache = true;
                     }
                 });
 
