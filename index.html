@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Meu PWA</title>
   <link rel="manifest" href="/manifest.json">
-  <link rel="stylesheet" href="/style.css">
   <link rel="icon" type="image/png" sizes="192x192" href="/images/icon-192x192.png">
   <link rel="icon" type="image/png" sizes="512x512" href="/images/icon-512x512.png">
   <style>
@@ -58,17 +57,16 @@
         navigator.serviceWorker.register('/service-worker.js').then((registration) => {
           console.log('ServiceWorker registrado com sucesso: ', registration.scope);
 
+          // Verificar se há uma atualização disponível
           registration.onupdatefound = () => {
             const installingWorker = registration.installing;
             installingWorker.onstatechange = () => {
-              if (installingWorker.state === 'installed') {
-                if (navigator.serviceWorker.controller) {
-                  updateButton.style.display = 'block';
-                }
+              if (installingWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                updateButton.style.display = 'block';
               }
             };
           };
-        }, (err) => {
+        }).catch((err) => {
           console.log('ServiceWorker registro falhou: ', err);
         });
       });
@@ -78,7 +76,6 @@
       if (navigator.serviceWorker.controller) {
         navigator.serviceWorker.controller.postMessage({ action: 'skipWaiting' });
       }
-      window.location.reload();
     });
 
     navigator.serviceWorker.addEventListener('controllerchange', () => {
