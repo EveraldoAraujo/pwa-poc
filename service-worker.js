@@ -15,6 +15,11 @@ async function updateCache() {
         const cache = await caches.open(CACHE_NAME);
     const response = await fetch(element);
     var x = await cache.match(response);
+    caches.open(CACHE_NAME).then(function (cache) {
+        cache.match(element, {}).then(m => m.text()).then(b=>{
+            fetch(element).then(res=>res.text()).then(e => console.log([b.localeCompare(e), b, e]))
+        })
+    })
     console.log(response);
     console.log(x);
     debugger;
