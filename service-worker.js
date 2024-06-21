@@ -23,9 +23,9 @@ async function updateCache() {
     console.log(response);
     console.log(x);
     debugger;
-    if (response.ok) {
-    await cache.put(element, response.clone());
-  }
+    // if (response.ok) {
+    //     await cache.put(element, response.clone());
+    // }
 
     }
 
