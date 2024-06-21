@@ -1,7 +1,33 @@
 const CACHE_NAME = 'pwa-cache-v1';
 const urlsToCache = [
-  '/'
+  '/',
+  '/index.html'
 ];
+
+// Função para atualizar o cache
+async function updateCache(request) {
+  const cache = await caches.open(CACHE_NAME);
+  const response = await fetch(request);
+  if (response.ok) {
+    await cache.put(request, response.clone());
+  }
+  return response;
+}
+
+// Função para buscar do cache e atualizar em segundo plano
+async function fetchAndUpdate(request) {
+  const cache = await caches.open(CACHE_NAME);
+  const cachedResponse = await cache.match(request);
+  const networkResponsePromise = fetch(request);
+
+  networkResponsePromise.then(response => {
+    if (response.ok) {
+      cache.put(request, response.clone());
+    }
+  });
+
+  return cachedResponse || networkResponsePromise;
+}
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
@@ -9,7 +35,7 @@ self.addEventListener('install', (event) => {
       return cache.addAll(urlsToCache);
     })
   );
-  self.skipWaiting(); // Força o novo SW a ser ativado imediatamente
+  self.skipWaiting();
 });
 
 self.addEventListener('activate', (event) => {
@@ -25,15 +51,11 @@ self.addEventListener('activate', (event) => {
       );
     })
   );
-  self.clients.claim(); // Faz o SW ativo controlar todas as abas imediatamente
+  self.clients.claim();
 });
 
 self.addEventListener('fetch', (event) => {
-  event.respondWith(
-    caches.match(event.request).then((response) => {
-      return response || fetch(event.request);
-    })
-  );
+  event.respondWith(fetchAndUpdate(event.request));
 });
 
 self.addEventListener('message', (event) => {
